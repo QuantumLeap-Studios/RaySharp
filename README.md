@@ -1,4 +1,4 @@
-﻿# RaySharp
+![RaySharp Logo](https://raw.githubusercontent.com/QuantumLeap-Studios/RaySharp/master/Media/RaysharpBig.png)
 
 RaySharp is a powerful launcher application for Windows that provides quick access to applications, files, and custom commands through a sleek and customizable interface. Similar to other launchers like Alfred for Mac or Spotlight, RaySharp aims to boost your productivity by providing a fast way to search and execute commands.
 
