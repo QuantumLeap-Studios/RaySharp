@@ -1,0 +1,245 @@
+﻿<Window x:Class="RaySharp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RaySharp" Height="330" Width="500"
+        WindowStyle="None" Topmost="True" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        Loaded="Window_OnLoaded">
+    <Window.Resources>
+        <!-- Theme Resources -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <!-- Default Theme -->
+                    <LinearGradientBrush x:Key="WindowBackground" EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF232325" Offset="0"/>
+                        <GradientStop Color="#FF1A1A1C" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="HeaderBarBackground" StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#FFE73C3C" Offset="0"/>
+                        <GradientStop Color="#FFFF6B6B" Offset="0.5"/>
+                        <GradientStop Color="#FFE73C3C" Offset="1"/>
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="SearchBoxTextColor" Color="White"/>
+                    <SolidColorBrush x:Key="SearchIconColor" Color="#FF8E8E8E"/>
+                    <SolidColorBrush x:Key="ResultsTitleColor" Color="White"/>
+                    <SolidColorBrush x:Key="ResultsDescriptionColor" Color="#FFAAAAAA"/>
+                    <SolidColorBrush x:Key="ResultsShortcutColor" Color="#FF8E8E8E"/>
+                    <SolidColorBrush x:Key="ResultsIconColor" Color="#FF8E8E8E"/>
+                    <SolidColorBrush x:Key="ResultsSelectionColor" Color="#3DE73C3C"/>
+                    <SolidColorBrush x:Key="ResultsHoverColor" Color="#1FFFFFFF"/>
+                    <SolidColorBrush x:Key="ResultsSeparatorColor" Color="#26FFFFFF"/>
+                    <Color x:Key="SearchBoxFocusColor">#FFE73C3C</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Animations -->
+            <Storyboard x:Key="WindowAppearAnimation">
+                <DoubleAnimation Storyboard.TargetName="MainBorder" Storyboard.TargetProperty="Opacity"
+                                 From="0" To="1" Duration="0:0:0.9"/>
+                <DoubleAnimation Storyboard.TargetName="MainBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                 From="-20" To="0" Duration="0:0:0.9">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+
+            <Storyboard x:Key="WindowDisappearAnimation">
+                <DoubleAnimation Storyboard.TargetName="MainBorder" Storyboard.TargetProperty="Opacity"
+                                 From="1" To="0" Duration="0:0:0.6"/>
+                <DoubleAnimation Storyboard.TargetName="MainBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                 From="0" To="-20" Duration="0:0:0.6">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+
+            <Storyboard x:Key="ResultsAppearAnimation">
+                <DoubleAnimation Storyboard.TargetName="ResultsArea" Storyboard.TargetProperty="Opacity"
+                                 From="0" To="1" Duration="0:0:0.3"/>
+                <DoubleAnimation Storyboard.TargetName="ResultsArea" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                 From="-5" To="0" Duration="0:0:0.3">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+
+            <Storyboard x:Key="ResultsDisappearAnimation">
+                <DoubleAnimation Storyboard.TargetName="ResultsArea" Storyboard.TargetProperty="Opacity"
+                                 From="1" To="0" Duration="0:0:0.2"/>
+                <DoubleAnimation Storyboard.TargetName="ResultsArea" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                 From="0" To="-5" Duration="0:0:0.2">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseIn"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+
+            <Style x:Key="SearchBoxStyle" TargetType="TextBox">
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Foreground" Value="{DynamicResource SearchBoxTextColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="CaretBrush" Value="{DynamicResource HeaderBarBackground}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border Background="{TemplateBinding Background}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    CornerRadius="4">
+                                <ScrollViewer x:Name="PART_ContentHost"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="(TextBox.Foreground).(SolidColorBrush.Color)"
+                                                    To="{StaticResource SearchBoxFocusColor}" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="(TextBox.Foreground).(SolidColorBrush.Color)"
+                                                    To="White" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Result Item Style -->
+            <Style x:Key="ResultItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="8,6"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" 
+                                    CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ResultsSelectionColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ResultsHoverColor}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Result Item Template -->
+            <DataTemplate x:Key="ResultItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="{Binding Icon}" 
+                               FontSize="18" Foreground="{DynamicResource ResultsIconColor}" 
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource ResultsTitleColor}" 
+                                   FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding Description}" Foreground="{DynamicResource ResultsDescriptionColor}" 
+                                   FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="2" Text="{Binding Shortcut}" 
+                               Foreground="{DynamicResource ResultsShortcutColor}" FontSize="12" 
+                               VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border x:Name="MainBorder"
+        CornerRadius="12"
+        Opacity="0"
+        RenderTransformOrigin="0.5,0.5"
+        SnapsToDevicePixels="True"
+        Margin="0"
+        ClipToBounds="True">
+        <Border.RenderTransform>
+            <TranslateTransform/>
+        </Border.RenderTransform>
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.6" Color="Black"/>
+        </Border.Effect>
+        <Border.Background>
+            <DynamicResourceExtension ResourceKey="WindowBackground"/>
+        </Border.Background>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Height="2" VerticalAlignment="Top" CornerRadius="12,12,0,0">
+                <Border.Background>
+                    <DynamicResourceExtension ResourceKey="HeaderBarBackground"/>
+                </Border.Background>
+            </Border>
+
+            <!-- Search Box Area -->
+            <Grid Margin="12,10,12,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="⌕" FontSize="22" Foreground="{DynamicResource SearchIconColor}" VerticalAlignment="Center" Margin="5,0,8,0"/>
+
+                <TextBox x:Name="SearchBox" 
+                         Grid.Column="1" 
+                         Style="{StaticResource SearchBoxStyle}"
+                         KeyDown="SearchBox_KeyDown"
+                         TextChanged="SearchBox_TextChanged"
+                         VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Results Area -->
+            <Border x:Name="ResultsArea" 
+                    Grid.Row="1" 
+                    BorderThickness="0,1,0,0" 
+                    BorderBrush="{DynamicResource ResultsSeparatorColor}" 
+                    Margin="0,0,0,0"
+                    Visibility="Collapsed"
+                    Opacity="0"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="0"/>
+                </Border.RenderTransform>
+                <ListBox x:Name="ResultsList"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Margin="8,8,8,8"
+                         MaxHeight="230"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ItemContainerStyle="{StaticResource ResultItemStyle}"
+                         ItemTemplate="{StaticResource ResultItemTemplate}"
+                         SelectionChanged="ResultsList_SelectionChanged"
+                         KeyDown="ResultsList_KeyDown"
+                         Foreground="{DynamicResource ResultsTitleColor}"/>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
