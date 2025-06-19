@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,6 +61,15 @@ namespace RaySharp
             ["maps"] = "🗺️"
         };
 
+        private static readonly string[] CommonPaths = {
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+            Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
+            Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
+            Path.Combine("C:\\Users", Environment.UserName, "Downloads")
+        };
+
         public MainWindow()
         {
             InitializeComponent();
@@ -95,7 +103,7 @@ namespace RaySharp
             {
                 var settings = SettingsManager.LoadSettings();
                 ApplyTheme(settings.SearchTheme);
-                alwaysOnTop = settings.AlwaysOnTop;
+                alwaysOnTop = true;
             }
             catch
             {
@@ -107,7 +115,7 @@ namespace RaySharp
         {
             defaultTheme = new ResourceDictionary();
 
-            object[] resourceKeys = {
+            ReadOnlySpan<object> resourceKeys = new object[] {
                 "WindowBackground", "HeaderBarBackground", "SearchBoxTextColor", "SearchIconColor",
                 "ResultsTitleColor", "ResultsDescriptionColor", "ResultsShortcutColor", "ResultsIconColor",
                 "ResultsSelectionColor", "ResultsHoverColor", "ResultsSeparatorColor", "SearchBoxFocusColor"
@@ -119,7 +127,6 @@ namespace RaySharp
             }
 
             darkTheme = CreateDarkTheme();
-
             lightTheme = CreateLightTheme();
         }
 
@@ -127,7 +134,11 @@ namespace RaySharp
         {
             var theme = new ResourceDictionary();
 
-            theme["WindowBackground"] = new LinearGradientBrush
+            Color purpleColor = Color.FromRgb(140, 60, 231);
+            var purpleSelectionBrush = new SolidColorBrush(Color.FromArgb(61, purpleColor.R, purpleColor.G, purpleColor.B));
+            var iconColor = new SolidColorBrush(Color.FromRgb(142, 142, 142));
+
+            var windowBackground = new LinearGradientBrush
             {
                 StartPoint = new Point(0.5, 0),
                 EndPoint = new Point(0.5, 1),
@@ -138,26 +149,27 @@ namespace RaySharp
                 }
             };
 
-            theme["HeaderBarBackground"] = new LinearGradientBrush
+            var headerBackground = new LinearGradientBrush
             {
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(1, 0),
                 GradientStops = new GradientStopCollection
                 {
-                    new GradientStop(Color.FromRgb(140, 60, 231), 0),
+                    new GradientStop(purpleColor, 0),
                     new GradientStop(Color.FromRgb(107, 107, 255), 0.5),
-                    new GradientStop(Color.FromRgb(140, 60, 231), 1)
+                    new GradientStop(purpleColor, 1)
                 }
             };
 
-            Color purpleColor = Color.FromRgb(140, 60, 231);
+            theme["WindowBackground"] = windowBackground;
+            theme["HeaderBarBackground"] = headerBackground;
             theme["SearchBoxTextColor"] = Brushes.White;
-            theme["SearchIconColor"] = new SolidColorBrush(Color.FromRgb(142, 142, 142));
+            theme["SearchIconColor"] = iconColor;
             theme["ResultsTitleColor"] = Brushes.White;
             theme["ResultsDescriptionColor"] = new SolidColorBrush(Color.FromRgb(170, 170, 170));
-            theme["ResultsShortcutColor"] = new SolidColorBrush(Color.FromRgb(142, 142, 142));
-            theme["ResultsIconColor"] = new SolidColorBrush(Color.FromRgb(142, 142, 142));
-            theme["ResultsSelectionColor"] = new SolidColorBrush(Color.FromArgb(61, purpleColor.R, purpleColor.G, purpleColor.B));
+            theme["ResultsShortcutColor"] = iconColor;
+            theme["ResultsIconColor"] = iconColor;
+            theme["ResultsSelectionColor"] = purpleSelectionBrush;
             theme["ResultsHoverColor"] = new SolidColorBrush(Color.FromArgb(31, 255, 255, 255));
             theme["ResultsSeparatorColor"] = new SolidColorBrush(Color.FromArgb(38, 255, 255, 255));
             theme["SearchBoxFocusColor"] = purpleColor;
@@ -169,7 +181,11 @@ namespace RaySharp
         {
             var theme = new ResourceDictionary();
 
-            theme["WindowBackground"] = new LinearGradientBrush
+            Color blueColor = Color.FromRgb(52, 152, 219);
+            var blueSelectionBrush = new SolidColorBrush(Color.FromArgb(61, blueColor.R, blueColor.G, blueColor.B));
+            var iconColor = new SolidColorBrush(Color.FromRgb(100, 100, 100));
+
+            var windowBackground = new LinearGradientBrush
             {
                 StartPoint = new Point(0.5, 0),
                 EndPoint = new Point(0.5, 1),
@@ -180,26 +196,27 @@ namespace RaySharp
                 }
             };
 
-            theme["HeaderBarBackground"] = new LinearGradientBrush
+            var headerBackground = new LinearGradientBrush
             {
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(1, 0),
                 GradientStops = new GradientStopCollection
                 {
-                    new GradientStop(Color.FromRgb(52, 152, 219), 0),
+                    new GradientStop(blueColor, 0),
                     new GradientStop(Color.FromRgb(41, 128, 185), 0.5),
-                    new GradientStop(Color.FromRgb(52, 152, 219), 1)
+                    new GradientStop(blueColor, 1)
                 }
             };
 
-            Color blueColor = Color.FromRgb(52, 152, 219);
+            theme["WindowBackground"] = windowBackground;
+            theme["HeaderBarBackground"] = headerBackground;
             theme["SearchBoxTextColor"] = new SolidColorBrush(Color.FromRgb(50, 50, 50));
-            theme["SearchIconColor"] = new SolidColorBrush(Color.FromRgb(100, 100, 100));
+            theme["SearchIconColor"] = iconColor;
             theme["ResultsTitleColor"] = new SolidColorBrush(Color.FromRgb(50, 50, 50));
             theme["ResultsDescriptionColor"] = new SolidColorBrush(Color.FromRgb(90, 90, 90));
-            theme["ResultsShortcutColor"] = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            theme["ResultsIconColor"] = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            theme["ResultsSelectionColor"] = new SolidColorBrush(Color.FromArgb(61, blueColor.R, blueColor.G, blueColor.B));
+            theme["ResultsShortcutColor"] = iconColor;
+            theme["ResultsIconColor"] = iconColor;
+            theme["ResultsSelectionColor"] = blueSelectionBrush;
             theme["ResultsHoverColor"] = new SolidColorBrush(Color.FromArgb(31, 0, 0, 0));
             theme["ResultsSeparatorColor"] = new SolidColorBrush(Color.FromArgb(38, 0, 0, 0));
             theme["SearchBoxFocusColor"] = blueColor;
@@ -212,23 +229,21 @@ namespace RaySharp
             if (defaultTheme == null)
                 InitializeThemes();
 
-            ResourceDictionary themeToApply;
-            switch (themeName?.ToLowerInvariant())
-            {
-                case "dark":
-                    themeToApply = darkTheme!;
-                    break;
-                case "light":
-                    themeToApply = lightTheme!;
-                    break;
-                default:
-                    themeToApply = defaultTheme!;
-                    break;
-            }
+            ResourceDictionary? themeToApply;
 
-            foreach (var key in themeToApply.Keys)
+            if (themeName != null && themeName.Equals("dark", StringComparison.OrdinalIgnoreCase))
+                themeToApply = darkTheme;
+            else if (themeName != null && themeName.Equals("light", StringComparison.OrdinalIgnoreCase))
+                themeToApply = lightTheme;
+            else
+                themeToApply = defaultTheme;
+
+            if (themeToApply != null)
             {
-                this.Resources[key] = themeToApply[key];
+                foreach (var key in themeToApply.Keys)
+                {
+                    this.Resources[key] = themeToApply[key];
+                }
             }
         }
 
@@ -364,7 +379,7 @@ namespace RaySharp
         {
             try
             {
-                string url = $"https://www.google.com/search?q=s{Uri.EscapeDataString(expression)}+math+explanation";
+                string url = $"https://www.google.com/search?q={Uri.EscapeDataString(expression)}+math+explanation";
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = url,
@@ -400,13 +415,16 @@ namespace RaySharp
                     Icon = "🔢",
                     Title = result,
                     Description = $"Result of {query}",
-                    Shortcut = "",
+                    Shortcut = string.Empty,
                     Command = CommandRegistry.Search(query).FirstOrDefault()
                 });
             }
 
-            if (query.StartsWith("f ", StringComparison.OrdinalIgnoreCase) ||
-                query.StartsWith("file ", StringComparison.OrdinalIgnoreCase))
+            ReadOnlySpan<char> querySpan = query.AsSpan();
+            if ((querySpan.Length > 2 && querySpan[0] == 'f' && querySpan[1] == ' ') ||
+                (querySpan.Length > 5 && (querySpan[0] == 'f' || querySpan[0] == 'F') &&
+                 (querySpan[1] == 'i' || querySpan[1] == 'I') && (querySpan[2] == 'l' || querySpan[2] == 'L') &&
+                 (querySpan[3] == 'e' || querySpan[3] == 'E') && querySpan[4] == ' '))
             {
                 ProcessFileSearch(query);
             }
@@ -426,25 +444,39 @@ namespace RaySharp
 
         private void ProcessFileSearch(string query)
         {
+            ReadOnlySpan<char> querySpan = query.AsSpan();
             string searchTerm;
-            if (query.StartsWith("f ", StringComparison.OrdinalIgnoreCase))
-                searchTerm = query.Substring(2).Trim();
+
+            if (querySpan[0] == 'f' || querySpan[0] == 'F')
+            {
+                if (querySpan.Length > 2 && querySpan[1] == ' ')
+                    searchTerm = query.Substring(2).Trim();
+                else if (querySpan.Length > 5)
+                    searchTerm = query.Substring(5).Trim();
+                else
+                    return;
+            }
             else
-                searchTerm = query.Substring(5).Trim();
+            {
+                return;
+            }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 try
                 {
                     var fileSearchResults = SearchFiles(searchTerm);
-                    foreach (var fileResult in fileSearchResults.Take(10))
+                    int count = Math.Min(fileSearchResults.Count, 10);
+
+                    for (int i = 0; i < count; i++)
                     {
+                        var fileResult = fileSearchResults[i];
                         searchResults.Add(new CommandResult
                         {
                             Icon = "📄",
                             Title = Path.GetFileName(fileResult),
                             Description = fileResult,
-                            Shortcut = "",
+                            Shortcut = string.Empty,
                             Command = new FileSearchCommand()
                         });
                     }
@@ -456,7 +488,7 @@ namespace RaySharp
                         Icon = "⚠️",
                         Title = "Error searching files",
                         Description = ex.Message,
-                        Shortcut = "",
+                        Shortcut = string.Empty,
                         Command = null
                     });
                 }
@@ -466,7 +498,8 @@ namespace RaySharp
         private void AddCommandResults(string query)
         {
             var results = CommandRegistry.Search(query);
-            HashSet<string> addedCommands = new HashSet<string>();
+
+            var addedCommands = new HashSet<string>(capacity: 20, StringComparer.OrdinalIgnoreCase);
 
             foreach (var command in results)
             {
@@ -477,7 +510,7 @@ namespace RaySharp
                         Icon = GetIconForCommand(command),
                         Title = command.Name,
                         Description = command.Description,
-                        Shortcut = GetShortcutForCommand(command),
+                        Shortcut = string.Empty,      
                         Command = command
                     });
                 }
@@ -489,29 +522,39 @@ namespace RaySharp
             List<string> results = new List<string>(15);
             searchTerm = searchTerm.ToLowerInvariant();
 
-            string[] commonPaths = {
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-                $"C:\\Users\\{Environment.UserName}\\Downloads"
-            };
+            List<string> searchPaths = new List<string>(CommonPaths.Length + 5);
 
-            List<string> searchPaths = new List<string>(commonPaths);
+            foreach (var path in CommonPaths)
+            {
+                if (Directory.Exists(path))
+                    searchPaths.Add(path);
+            }
+
             foreach (var drive in DriveInfo.GetDrives())
             {
-                if (drive.IsReady && drive.DriveType == DriveType.Fixed &&
-                    !commonPaths.Any(p => p.StartsWith(drive.RootDirectory.FullName, StringComparison.OrdinalIgnoreCase)))
+                if (!drive.IsReady || drive.DriveType != DriveType.Fixed)
+                    continue;
+
+                bool alreadyIncluded = false;
+                string driveRoot = drive.RootDirectory.FullName;
+
+                foreach (var path in CommonPaths)
                 {
-                    searchPaths.Add(drive.RootDirectory.FullName);
+                    if (path.StartsWith(driveRoot, StringComparison.OrdinalIgnoreCase))
+                    {
+                        alreadyIncluded = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyIncluded)
+                {
+                    searchPaths.Add(driveRoot);
                 }
             }
 
             foreach (var basePath in searchPaths)
             {
-                if (!Directory.Exists(basePath)) continue;
-
                 try
                 {
                     SearchDirectoryForFiles(basePath, searchTerm, results);
@@ -522,12 +565,21 @@ namespace RaySharp
 
                     SearchSubdirectoriesForFiles(basePath, searchTerm, results);
                 }
-                catch {        }
+                catch { }      
 
                 if (results.Count >= 15) break;
             }
 
-            return results.Distinct().ToList();
+            if (results.Count > 0)
+            {
+                HashSet<string> uniqueResults = new HashSet<string>(results, StringComparer.OrdinalIgnoreCase);
+                if (uniqueResults.Count < results.Count)
+                {
+                    return new List<string>(uniqueResults);
+                }
+            }
+
+            return results;
         }
 
         private static void SearchDirectoryForFiles(string basePath, string searchTerm, List<string> results)
@@ -535,16 +587,17 @@ namespace RaySharp
             try
             {
                 string[] files = Directory.GetFiles(basePath, "*" + searchTerm + "*", SearchOption.TopDirectoryOnly);
+
                 foreach (string file in files)
                 {
-                    if (Path.GetFileName(file).ToLowerInvariant().Contains(searchTerm))
+                    if (Path.GetFileName(file).Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                     {
                         results.Add(file);
                         if (results.Count >= 5) break;
                     }
                 }
             }
-            catch {        }
+            catch { }      
         }
 
         private static void SearchForDirectories(string basePath, string searchTerm, List<string> results)
@@ -552,16 +605,17 @@ namespace RaySharp
             try
             {
                 string[] directories = Directory.GetDirectories(basePath, "*" + searchTerm + "*", SearchOption.TopDirectoryOnly);
+
                 foreach (string dir in directories)
                 {
-                    if (Path.GetFileName(dir).ToLowerInvariant().Contains(searchTerm))
+                    if (Path.GetFileName(dir).Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                     {
                         results.Add(dir);
                         if (results.Count >= 5) break;
                     }
                 }
             }
-            catch {        }
+            catch { }      
         }
 
         private static void SearchSubdirectoriesForFiles(string basePath, string searchTerm, List<string> results)
@@ -573,19 +627,20 @@ namespace RaySharp
                     try
                     {
                         string[] files = Directory.GetFiles(dir, "*" + searchTerm + "*", SearchOption.TopDirectoryOnly);
+
                         foreach (string file in files)
                         {
-                            if (Path.GetFileName(file).ToLowerInvariant().Contains(searchTerm))
+                            if (Path.GetFileName(file).Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                             {
                                 results.Add(file);
                                 if (results.Count >= 3) return;
                             }
                         }
                     }
-                    catch {        }
+                    catch { }      
                 }
             }
-            catch {        }
+            catch { }      
         }
 
         private void ShowResultsArea()
@@ -655,11 +710,11 @@ namespace RaySharp
                 {
                     var dt = new DataTable();
                     var value = dt.Compute(expression, null);
-                    result = value.ToString() ?? string.Empty;
+                    result = value?.ToString() ?? string.Empty;
                     return !string.IsNullOrEmpty(result);
                 }
             }
-            catch {       }
+            catch { }     
 
             return false;
         }
@@ -673,13 +728,12 @@ namespace RaySharp
             if (commandTypeName == "FileSearchCommand")
                 return "📄";
 
-            string commandName = command.Name.ToLowerInvariant();
-            if (CommandIconCache.TryGetValue(commandName, out string icon))
+            if (CommandIconCache.TryGetValue(command.Name, out string icon))
             {
                 return icon;
             }
 
-            return "🔍";    
+            return "🔍";
         }
 
         private static string GetShortcutForCommand(ICommand command)
@@ -697,6 +751,8 @@ namespace RaySharp
             HideResultsArea();
             ResizeWindowToContent(false);
             isVisible = true;
+
+            Topmost = alwaysOnTop;
 
             Storyboard? windowAppearAnimation = this.FindResource("WindowAppearAnimation") as Storyboard;
             windowAppearAnimation?.Begin(this);

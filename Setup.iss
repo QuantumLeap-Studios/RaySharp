@@ -21,7 +21,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=C:\Users\harlo\source\repos\RaySharp\LICENSE
-; Uncomment the following line to run in non administrative install mode (install for current user only).
+; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequired=admin
 OutputDir=C:\Users\harlo\source\repos\RaySharp\bin\Setup
@@ -31,8 +31,9 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Registry]
-Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "RaySharp"; ValueData: "{app}\RaySharp.exe"; Check: IsAdminInstallMode
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "RaySharp"; ValueData: "{app}\RaySharp.exe"; Check: not IsAdminInstallMode
+; Since PrivilegesRequired=admin, we'll always have admin privileges
+; Add to HKLM for all users (system-wide startup)
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "RaySharp"; ValueData: """{app}\RaySharp.exe"""; ValueType: string
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -71,5 +72,8 @@ Source: "C:\Users\harlo\source\repos\RaySharp\bin\Release\net8.0-windows\*"; Des
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\RaySharp.exe"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
+[Run]
+Filename: "{app}\RaySharp.exe"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

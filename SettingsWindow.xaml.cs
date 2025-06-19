@@ -28,6 +28,11 @@ namespace RaySharp
             ThemeComboBox.SelectedItem = ThemeComboBox.Items.Cast<ComboBoxItem>()
                 .FirstOrDefault(item => item.Content.ToString() == _settings.SearchTheme);
 
+            HotkeyModifierComboBox.SelectedItem = HotkeyModifierComboBox.Items.Cast<ComboBoxItem>()
+                .FirstOrDefault(item => item.Content.ToString() == _settings.HotkeyModifier);
+            HotkeyKeyComboBox.SelectedItem = HotkeyKeyComboBox.Items.Cast<ComboBoxItem>()
+                .FirstOrDefault(item => item.Content.ToString() == _settings.HotkeyKey);
+
             LoadPlugins();
 
             PluginListView.ItemsSource = _plugins;
@@ -157,6 +162,22 @@ namespace RaySharp
             _settings.AlwaysOnTop = AlwaysOnTopCheckBox.IsChecked ?? false;
             _settings.MaxSearchResults = GetMaxResultsValue(MaxResultsComboBox.SelectedIndex);
             _settings.SearchTheme = ((ComboBoxItem)ThemeComboBox.SelectedItem).Content.ToString();
+
+            if (HotkeyModifierComboBox.SelectedItem != null && HotkeyKeyComboBox.SelectedItem != null)
+            {
+                string oldModifier = _settings.HotkeyModifier;
+                string oldKey = _settings.HotkeyKey;
+
+                _settings.HotkeyModifier = ((ComboBoxItem)HotkeyModifierComboBox.SelectedItem).Content.ToString();
+                _settings.HotkeyKey = ((ComboBoxItem)HotkeyKeyComboBox.SelectedItem).Content.ToString();
+
+                if (oldModifier != _settings.HotkeyModifier || oldKey != _settings.HotkeyKey)
+                {
+                    MessageBox.Show($"Hotkey changed to {_settings.HotkeyModifier}+{_settings.HotkeyKey}. " +
+                                    "Please restart the application for the new hotkey to take effect.",
+                                    "Hotkey Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
 
             _settings.EnabledPlugins.Clear();
             foreach (var plugin in _plugins.Where(p => p.IsEnabled))
