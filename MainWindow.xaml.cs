@@ -76,7 +76,6 @@ namespace RaySharp
             CommandRegistry.InitDefaults();
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Loaded += (s, e) => this.HideWithAnimation();
 
             ResultsList.ItemsSource = searchResults;
 
