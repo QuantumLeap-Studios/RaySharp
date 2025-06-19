@@ -12,4 +12,7 @@ public class OpenCalculatorCommand : ICommand
 
     public void Execute(string query) =>
         Process.Start("calc.exe");
+    public void Awake()
+    {
+    }
 }

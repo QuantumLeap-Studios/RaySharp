@@ -20,8 +20,11 @@ namespace RaySharp
             launcher = new MainWindow();
             HotkeyManager.Current.AddOrReplace("ShowLauncher", Key.Space, ModifierKeys.Control, (s, args) =>
             {
-                launcher.ShowLauncher();
-                args.Handled = true;
+                if (!launcher.isVisible)
+                {
+                    launcher.ShowLauncher();
+                    args.Handled = true;
+                }
             });
         }
     }

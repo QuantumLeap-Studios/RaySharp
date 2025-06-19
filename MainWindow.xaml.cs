@@ -28,6 +28,9 @@ namespace RaySharp
         private ResourceDictionary? darkTheme;
         private ResourceDictionary? lightTheme;
 
+        public bool isVisible { get; private set; } = false;
+        public bool alwaysOnTop = true;
+
         private static readonly Regex MathExpressionRegex = new Regex(@"^[0-9\.\+\-\*/\%\^\(\)\s]+$", RegexOptions.Compiled);
 
         private static readonly Dictionary<string, string> CommandIconCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -92,6 +95,7 @@ namespace RaySharp
             {
                 var settings = SettingsManager.LoadSettings();
                 ApplyTheme(settings.SearchTheme);
+                alwaysOnTop = settings.AlwaysOnTop;
             }
             catch
             {
@@ -490,7 +494,8 @@ namespace RaySharp
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)
+                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
+                $"C:\\Users\\{Environment.UserName}\\Downloads"
             };
 
             List<string> searchPaths = new List<string>(commonPaths);
@@ -691,6 +696,7 @@ namespace RaySharp
             searchResults.Clear();
             HideResultsArea();
             ResizeWindowToContent(false);
+            isVisible = true;
 
             Storyboard? windowAppearAnimation = this.FindResource("WindowAppearAnimation") as Storyboard;
             windowAppearAnimation?.Begin(this);
@@ -702,10 +708,12 @@ namespace RaySharp
             if (windowDisappearAnimation != null)
             {
                 windowDisappearAnimation.Begin(this);
+                isVisible = false;
             }
             else
             {
                 Hide();
+                isVisible = false;
             }
         }
     }

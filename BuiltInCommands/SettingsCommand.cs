@@ -17,4 +17,7 @@ public class SettingsCommand : ICommand
         RaySharp.SettingsWindow settingsWindow = new RaySharp.SettingsWindow();
         settingsWindow.ShowDialog();
     }
+    public void Awake()
+    {
+    }
 }

@@ -28,4 +28,7 @@ public class PlaySongCommand : ICommand
 
         Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
+    public void Awake()
+    {
+    }
 }

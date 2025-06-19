@@ -14,4 +14,7 @@ public class GoogleSearchCommand : ICommand
         var q = HttpUtility.UrlEncode(query.Substring(2));
         Process.Start(new ProcessStartInfo($"https://www.google.com/search?q={q}") { UseShellExecute = true });
     }
+    public void Awake()
+    {
+    }
 }

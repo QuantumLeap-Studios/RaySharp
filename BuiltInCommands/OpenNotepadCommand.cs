@@ -10,4 +10,8 @@ public class OpenNotepadCommand : ICommand
 
     public void Execute(string query) =>
         Process.Start("notepad.exe");
+
+    public void Awake()
+    {
+    }
 }

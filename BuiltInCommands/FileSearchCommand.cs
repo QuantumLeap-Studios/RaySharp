@@ -17,4 +17,7 @@ public class FileSearchCommand : ICommand
     {
         // WIP: No operation performed
     }
+    public void Awake()
+    {
+    }
 }

@@ -9,6 +9,7 @@
     <ApplicationIcon>RaySharp.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <SignAssembly>False</SignAssembly>
+	<InnoSetupCompilerPath>C:\Program Files (x86)\Inno Setup 6\ISCC.exe</InnoSetupCompilerPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,5 +46,4 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
 </Project>
