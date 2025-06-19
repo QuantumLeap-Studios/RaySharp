@@ -22,7 +22,7 @@ RaySharp stores its settings in `%LocalAppData%\RaySharp\settings.json`. The app
 
 ## Usage
 
-1. Press `Alt+Space` (default hotkey) to open RaySharp
+1. Press `Ctrl+Space` (default hotkey) to open RaySharp
 2. Type your query or command
 3. Use arrow keys to navigate through results
 4. Press Enter to execute the selected command
